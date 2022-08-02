@@ -1,14 +1,12 @@
-export class LabelData
-{
-	public label:string;
-	public index:number;
-	public duration:number;
+export class LabelData {
+  public label:string;
+  public index:number;
+  public duration:number;
 
-	constructor(label:string, index:number, duration:number)
-	{
-		this.label = label;
-		this.index = index;
-		this.duration = duration;
-	}
+  constructor(label:string, index:number, duration:number) {
+    this.label = label;
+    this.index = index;
+    this.duration = duration;
+  }
 }
 

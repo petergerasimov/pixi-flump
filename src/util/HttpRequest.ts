@@ -30,89 +30,81 @@
  */
 
 import {IHashMap} from "../interface/IHashMap";
-import {Promise} from "../util/Promise";
-import {ILoadable} from "../interface/ILoadable";
-
 /**
  * @class HttpRequest
  */
-export class HttpRequest
-{
-	/**
+export class HttpRequest {
+  /**
 	 * @static
 	 * @method request
 	 * @param {string} method
 	 * @param {string} url
 	 * @param {Array<string>} args
-	 * @returns {Promise}
+	 * @return {Promise}
 	 */
-	private static request(method:string, url:string, args:IHashMap<string>):Promise<any>
-	{
-		// Creating a promise
-		var promise = new Promise(function(resolve:Function, reject:Function) {
+  private static request(method:string, url:string, args:IHashMap<string>):Promise<any> {
+    // Creating a promise
+    const promise = new Promise(function(resolve:Function, reject:Function) {
+      // Instantiates the XMLHttpRequest
+      const client = new XMLHttpRequest();
+      let uri = url;
 
-			// Instantiates the XMLHttpRequest
-			var client = new XMLHttpRequest();
-			var uri = url;
+      if (args && (method === "POST" || method === "PUT")) {
+        uri += "?";
+        let argcount = 0;
+        for (const key in args) {
+          if (args.hasOwnProperty(key)) {
+            if (argcount++) {
+              uri += "&";
+            }
 
-			if(args && (method === 'POST' || method === 'PUT')){
-				uri += '?';
-				var argcount = 0;
-				for (var key in args) {
-					if (args.hasOwnProperty(key)) {
-						if (argcount++) {
-							uri += '&';
-						}
+            uri += encodeURIComponent(key) + "=" + encodeURIComponent(args[key]);
+          }
+        }
+      }
 
-						uri += encodeURIComponent(key) + '=' + encodeURIComponent(args[key]);
-					}
-				}
-			}
+      client.open(method, uri);
+      client.send();
 
-			client.open(method, uri);
-			client.send();
+      client.onload = function() {
+        if (this.status === 200 || this.status === 0) {
+          // Performs the function "resolve" when this.status is equal to 200
+          resolve(this.response || this.responseText);
+        } else {
+          // Performs the function "reject" when this.status is different than 200
+          reject(this.statusText);
+        }
+      };
 
-			client.onload = function () {
-				if (this.status === 200 || this.status === 0) {
-					// Performs the function "resolve" when this.status is equal to 200
-					resolve(this.response || this.responseText);
-				} else {
-					// Performs the function "reject" when this.status is different than 200
-					reject(this.statusText);
-				}
-			};
+      client.onerror = function() {
+        reject(this.statusText);
+      };
+    });
 
-			client.onerror = function () {
-				reject(this.statusText);
-			};
-		});
+    // Return the promise
+    return promise;
+  }
 
-		// Return the promise
-		return promise;
-	}
-
-	/**
+  /**
 	 *
 	 * @param {string} url
 	 * @param {IHashMap<any>} query
-	 * @returns {Promise<string>}
+	 * @return {Promise<string>}
 	 */
-	public static getString<T>(url:string, query:IHashMap<any> = {}):Promise<T>
-	{
-		return HttpRequest.request('GET', url, query);
-	}
+  public static getString<T>(url:string, query:IHashMap<any> = {}):Promise<T> {
+    return HttpRequest.request("GET", url, query);
+  }
 
-	/**
+  /**
 	 *
 	 * @param {string} url
 	 * @param {IHashMap<any>} query
-	 * @returns {Promise}
+	 * @return {Promise}
 	 */
-	public static getJSON(url:string, query:IHashMap<any> = {}):Promise<any>
-	{
-		return HttpRequest.getString(url, query).then((response:string) => {
-			return JSON.parse(response);
-		});
-	}
+  public static getJSON(url:string, query:IHashMap<any> = {}):Promise<any> {
+    return HttpRequest.getString(url, query).then((response:string) => {
+      return JSON.parse(response);
+    });
+  }
 }
 

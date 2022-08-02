@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es2020",
     "declaration": true,
-    "target": "es3",
+    "target": "es6",
     "noImplicitAny": false,
-    "removeComments": false
+    "removeComments": false,
+    "outDir": "./dist/",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules"
   ],
-  "files": [
-    "src/index.ts",
-    "src/FlumpLibrary.ts"
-  ]
+  "include": [ "src" ]
 }

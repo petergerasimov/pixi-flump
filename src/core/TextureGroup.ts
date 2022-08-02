@@ -1,76 +1,66 @@
-import {IHashMap} from "../interface/IHashMap";
+import * as PIXI from "pixi.js";
+
 import {TextureGroupAtlas} from "./TextureGroupAtlas";
 import {IAtlas, ITextureGroup} from "../interface/ILibrary";
 import {FlumpLibrary} from "../FlumpLibrary";
-import Texture = PIXI.Texture;
-import {Promise} from "../util/Promise";
-import Point = PIXI.Point;
 
-export class TextureGroup
-{
-	public static load(library:FlumpLibrary, json:ITextureGroup):Promise<TextureGroup>
-	{
-		var atlases = json.atlases;
-		var loaders:Array<Promise<any>> = [];
-		
-		for(var i = 0; i < atlases.length; i++)
-		{
-			var atlas:IAtlas = atlases[i];
-			loaders.push(TextureGroupAtlas.load(library, atlas));
-		}
+export class TextureGroup {
+  public static load(library:FlumpLibrary, json:ITextureGroup):Promise<TextureGroup> {
+    const atlases = json.atlases;
+    const loaders:Array<Promise<any>> = [];
 
-		return Promise.all(loaders).then((atlases:Array<TextureGroupAtlas>) =>
-		{
-			var names:Array<string> = [];
-			var textures:Array<PIXI.Texture> = [];
-			var ancors:Array<PIXI.Point> = [];
+    for (let i = 0; i < atlases.length; i++) {
+      const atlas:IAtlas = atlases[i];
+      loaders.push(TextureGroupAtlas.load(library, atlas));
+    }
 
-			for(var i = 0; i < atlases.length; i++)
-			{
-				var atlas = atlases[i];
+    return Promise.all(loaders).then((atlases:Array<TextureGroupAtlas>) => {
+      let names:Array<string> = [];
+      let textures:Array<PIXI.Texture> = [];
+      let ancors:Array<PIXI.Point> = [];
 
-				// @todo check on duplicate names
-				names = names.concat(atlas.getNames())
-				textures = textures.concat(atlas.getTextures())
-				ancors = ancors.concat(atlas.getAnchors())
+      for (let i = 0; i < atlases.length; i++) {
+        const atlas = atlases[i];
 
-				atlas.destruct();
-			}
+        // @todo check on duplicate names
+        names = names.concat(atlas.getNames());
+        textures = textures.concat(atlas.getTextures());
+        ancors = ancors.concat(atlas.getAnchors());
 
-			return new TextureGroup(names, textures, ancors);
-		}).catch((err) => {
-			console.warn('could not load textureGroup', err)
-			throw new Error('could not load textureGroup');
-		});
-	}
+        atlas.destruct();
+      }
 
-	// public textureGroupAtlases:Array<TextureGroupAtlas>;
-	// public textures:IHashMap<Texture>;
-	protected _names:Array<string> = [];
-	protected _textures:Array<PIXI.Texture> = [];
-	protected _ancors:Array<Point> = [];
+      return new TextureGroup(names, textures, ancors);
+    }).catch((err) => {
+      console.warn("could not load textureGroup", err);
+      throw new Error("could not load textureGroup");
+    });
+  }
 
-	constructor(names:Array<string>, textures:Array<PIXI.Texture>, ancors:Array<Point>)
-	{
-		this._names = names;
-		this._textures = textures;
-		this._ancors = ancors;
-	}
+  // public textureGroupAtlases:Array<TextureGroupAtlas>;
+  // public textures:IHashMap<Texture>;
+  protected _names:Array<string> = [];
+  protected _textures:Array<PIXI.Texture> = [];
+  protected _ancors:Array<PIXI.Point> = [];
 
-	public hasSprite(name:string):boolean
-	{
-		return this._names.indexOf(name) > -1;
-	}
+  constructor(names:Array<string>, textures:Array<PIXI.Texture>, ancors:Array<PIXI.Point>) {
+    this._names = names;
+    this._textures = textures;
+    this._ancors = ancors;
+  }
 
-	public createSprite(name:string):PIXI.Sprite
-	{
-		var index = this._names.indexOf(name);
+  public hasSprite(name:string):boolean {
+    return this._names.indexOf(name) > -1;
+  }
 
-		var sprite = new PIXI.Sprite(this._textures[index]);
-		sprite.anchor.set(this._ancors[index].x, this._ancors[index].y);
-		sprite.name = name;
+  public createSprite(name:string):PIXI.Sprite {
+    const index = this._names.indexOf(name);
 
-		return sprite;
-	}
+    const sprite = new PIXI.Sprite(this._textures[index]);
+    sprite.anchor.set(this._ancors[index].x, this._ancors[index].y);
+    sprite.name = name;
+
+    return sprite;
+  }
 }
 

@@ -2,71 +2,61 @@
 
 import {QueueItem} from "./QueueItem";
 
-export class Queue
-{
-	private _list:Array<QueueItem> = [];
-	private _listLength:number = 0;
-	public current:QueueItem = null;
+export class Queue {
+  private _list:Array<QueueItem> = [];
+  private _listLength:number = 0;
+  public current:QueueItem = null;
 
-	public add(item:QueueItem):Queue
-	{
-		this._list.push(item);
-		this._listLength++;
-		
-		return this;
-	}
+  public add(item:QueueItem):Queue {
+    this._list.push(item);
+    this._listLength++;
 
-	public next():QueueItem
-	{
-		this.kill();
+    return this;
+  }
 
-		if(this._listLength > 0)
-		{
-			this.current = this._list.shift();
-			this._listLength--;
-		} else {
-			this.current = null;
-		}
+  public next():QueueItem {
+    this.kill();
 
-		return this.current;
-	}
+    if (this._listLength > 0) {
+      this.current = this._list.shift();
+      this._listLength--;
+    } else {
+      this.current = null;
+    }
 
-	public hasNext():boolean
-	{
-		return this._listLength > 0;
-	}
+    return this.current;
+  }
 
-	public end(all:boolean = false):Queue
-	{
-		if(all)
-		{
-			this._list.length = 0;
-			this._listLength = 0;
-		}
+  public hasNext():boolean {
+    return this._listLength > 0;
+  }
 
-		if(this.current){
-			this.current.times = 1;
-		}
+  public end(all:boolean = false):Queue {
+    if (all) {
+      this._list.length = 0;
+      this._listLength = 0;
+    }
 
-		return this;
-	}
+    if (this.current) {
+      this.current.times = 1;
+    }
 
-	public kill(all:boolean = false):Queue
-	{
-		if(all)
-		{
-			this._list.length = 0;
-			this._listLength = 0;
-		}
+    return this;
+  }
 
-		if(this.current)
-		{
-			let current = this.current;
-			this.current = null;
-			current.finish();
-			current.destruct();
-		}
+  public kill(all:boolean = false):Queue {
+    if (all) {
+      this._list.length = 0;
+      this._listLength = 0;
+    }
 
-		return this;
-	}
+    if (this.current) {
+      const current = this.current;
+      this.current = null;
+      current.finish();
+      current.destruct();
+    }
+
+    return this;
+  }
 }
