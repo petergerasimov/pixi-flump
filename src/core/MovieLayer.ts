@@ -116,10 +116,6 @@ export class MovieLayer extends PIXI.Container {
   }
 
   public setKeyframeData(symbol:PIXI.DisplayObject, keyframe:KeyframeData, frame:number) {
-    // let sinX = 0.0;
-    // let cosX = 1.0;
-    // let sinY = 0.0;
-    // let cosY = 1.0;
     let x = keyframe.x;
     let y = keyframe.y;
     let scaleX = keyframe.scaleX;
@@ -162,58 +158,22 @@ export class MovieLayer extends PIXI.Container {
       }
     }
 
-    // this.setTransform(x, y, scaleX, scaleY, 0, skewX, skewY, pivotX, pivotY)
 
-
-    // if (skewX != 0) {
-    //   sinX = Math.sin(skewX);
-    //   cosX = Math.cos(skewX);
-    // }
-
-    // if (skewY != 0) {
-    //   sinY = Math.sin(skewY);
-    //   cosY = Math.cos(skewY);
-    // }
-    //
-    // symbol.localTransform
-    //
-    // this.worldTransform.a = scaleX * cosY;
-    // this.worldTransform.b = scaleX * sinY;
-    // this.worldTransform.c = -scaleY * sinX;
-    // this.worldTransform.d = scaleY * cosX;
-    //
-    // this.worldTransform.tx = x - (pivotX * this.worldTransform.a + pivotY * this.worldTransform.c);
-    // this.worldTransform.ty = y - (pivotX * this.worldTransform.b + pivotY * this.worldTransform.d);
-
-    this._symbol.position.set(x, y);
-    this._symbol.scale.set(scaleX, scaleY);
-    if (!(this._symbol instanceof PIXI.Sprite)) {
-      this._symbol["pivot"].x = pivotX;
-      this._symbol["pivot"].y = pivotY;
+    let rotation = 0;
+    // Got the idea from the pixi animate extension
+    if (skewX === skewY)
+    {
+        rotation = skewY;
+        skewX = 0;
+        skewY = 0;
     }
-    this._symbol["skew"].set(skewX, skewY);
-
-    // console.log(pivotX, pivotY);
-
-    // console.log(this.worldTransform);
-
-    //
-    // this.setTransform(this._storedMtx.tx, this._storedMtx.ty, this._storedMtx.a, this._storedMtx.d, 0, this._storedMtx.b, this._storedMtx.c, 0, 0)
-    // this.worldTransform.set( this._storedMtx.a, this._storedMtx, this._storedMtx, this._storedMtx.tx, this._storedMtx.ty);
-    // this.setTransform(x, y, scaleX, scaleY, 0, skewX, skewY, 0, 0);
-    // this.visible = keyframe.visible;
-    // this.alpha = alpha;
+    this.setTransform(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY);
 
     this.alpha = alpha;
     this.visible = keyframe.visible;
 
     this._frame = frame;
   }
-
-  // updateTransform():void
-  // {
-  // 	// super.updateTransform();
-  // }
 
   public reset():void {
     if (this._symbol instanceof FlumpMovie) {
@@ -226,14 +186,5 @@ export class MovieLayer extends PIXI.Container {
       }
     }
   }
-
-  // public draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean):boolean
-  // {
-  // 	if(this._symbol != null && this.visible && this.alpha > 0 && this.scaleX != 0 && this.scaleY != 0)
-  // 	{
-  // 		this._symbol.draw(ctx);
-  // 	}
-  // 	return true;
-  // }
 }
 
