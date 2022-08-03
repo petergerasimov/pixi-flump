@@ -9,6 +9,8 @@ import {IPlayable} from "../interface/IPlayable";
 import {MovieLayer} from "../core/MovieLayer";
 import {LabelData} from "../data/LabelData";
 
+const SharedTicker = PIXI.Ticker.shared;
+
 /**
  * @author Mient-jan Stelling
  */
@@ -64,6 +66,17 @@ export class FlumpMovie extends PIXI.Container implements IPlayable {
 
     this.fps = library.frameRate;
     this.getQueue();
+
+    this.on("added", this._onAdded);
+    this.on("removed", this._onRemoved);
+  }
+
+  private _onAdded() {
+    SharedTicker.add(this.onTick.bind(this), null);
+  }
+
+  private _onRemoved() {
+    SharedTicker.remove(this.onTick.bind(this), null);
   }
 
   // public getLibrary():FlumpLibrary
@@ -181,7 +194,9 @@ export class FlumpMovie extends PIXI.Container implements IPlayable {
     return this;
   }
 
-  public onTick(delta:number, accumulated:number):void {
+  public onTick():void {
+    let delta = SharedTicker.deltaMS;
+
     const movieLayers = this._movieLayers;
     delta *= this.speed;
 
@@ -192,7 +207,7 @@ export class FlumpMovie extends PIXI.Container implements IPlayable {
 
       for (let i = 0; i < movieLayers.length; i++) {
         const layer = movieLayers[i];
-        layer.onTick(delta, accumulated);
+        layer.onTick();
         layer.setFrame(newFrame);
       }
 

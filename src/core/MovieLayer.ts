@@ -84,9 +84,9 @@ export class MovieLayer extends PIXI.Container {
   }
 
 
-  public onTick(delta:number, accumulated:number):void {
+  public onTick():void {
     if (this._symbol != null && (this._symbol instanceof FlumpMovie)) {
-      ( <FlumpMovie> this._symbol ).onTick(delta, accumulated);
+      this._symbol.onTick();
     }
   }
 
