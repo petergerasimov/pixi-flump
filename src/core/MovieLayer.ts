@@ -106,7 +106,7 @@ export class MovieLayer extends PIXI.Container {
         this.addChild(this._symbol);
       }
 
-      this.setKeyframeData(this._symbol, keyframe, frame);
+      this.setKeyframeData(keyframe, frame);
     } else {
       this.removeChildren();
       this._symbol = null;
@@ -115,7 +115,7 @@ export class MovieLayer extends PIXI.Container {
     return true;
   }
 
-  public setKeyframeData(symbol:PIXI.DisplayObject, keyframe:KeyframeData, frame:number) {
+  public setKeyframeData(keyframe:KeyframeData, frame:number) {
     let x = keyframe.x;
     let y = keyframe.y;
     let scaleX = keyframe.scaleX;
@@ -159,15 +159,24 @@ export class MovieLayer extends PIXI.Container {
     }
 
 
-    let rotation = 0;
-    // Got the idea from the pixi animate extension
-    if (skewX === skewY)
-    {
-        rotation = skewY;
-        skewX = 0;
-        skewY = 0;
+    let sinX = 0.0;
+    let cosX = 1.0;
+    let sinY = 0.0;
+    let cosY = 1.0;
+    
+    if (skewX != 0) {
+        sinX = Math.sin(skewX);
+        cosX = Math.cos(skewX);
     }
-    this.setTransform(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY);
+    if (skewY != 0) {
+        sinY = Math.sin(skewY);
+        cosY = Math.cos(skewY);
+    }
+
+    const matrix = new PIXI.Matrix(cosY*scaleX, sinY*scaleX, -sinX*scaleY, cosX*scaleY, x, y)
+
+    this._symbol.transform.setFromMatrix(matrix);
+    this._symbol.pivot.set(pivotX, pivotY);
 
     this.alpha = alpha;
     this.visible = keyframe.visible;
